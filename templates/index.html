@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/feed_card_css.css">
+    <link rel="stylesheet" href="../static/style.css">
+    <title>USUMM</title>
+</head>
+<body>
+    <div class="nav">
+        <h1><a href="/">USUMM</a></h1>
+        <form action="/search" method="GET">
+            <input type="text" name="q" placeholder="Search YouTube..." required>
+            <button type="submit">Search</button>
+        </form>
+        <p><a class="a" href="/logout">Logout</a></p>
+    </div>
+
+        
+
+    
+    <div class="feed-container">
+       
+        {% for video in videos%}
+        <a href="/summarize/{{video.video_id}}">
+        <article class="feed-card">
+            <div class="feed-card__author">
+            <img src="{{video.channel_avatar}}" alt="Jan Kammerath" class="feed-card__avatar">
+            <span class="feed-card__author-name">{{video.channelTitle}}</span>
+            </div>
+            
+            <div class="feed-card__content">
+            <div class="feed-card__text">
+                <h2 class="feed-card__title">{{video.title}}</h2>
+                <p class="feed-card__description">{{video.description[0:100]}}...</p>
+            </div>
+            <img src="{{video.thumbnail}}" alt="" class="feed-card__image">
+            </div>
+            
+            <div class="feed-card__meta">
+            <!-- <span class="feed-card__highlight">★</span> -->
+            <span class="feed-card__timestamp">{{video.published_at[:10]}}</span>
+            <div class="feed-card__stat">
+                <span>👏</span>
+                <span>{{video.like_count}}</span>
+            </div>
+            <div class="feed-card__stat">
+                <span>💬</span>
+                <span>{{video.comment_count}}</span>
+            </div>
+            </div>
+        </article>
+        </a>
+        {% endfor %}
+
+    </div>
+</body>
+
+<script>
+    function redirect(){
+        document.location.href = "http://"
+    }
+</script>
+</html>

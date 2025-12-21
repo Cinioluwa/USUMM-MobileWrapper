@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../static/feed_card_css.css    ">
+</head>
+<style>
+    body{
+        background-color: #1a1a1a;
+    }
+</style>
+<body>
+    <div class="article-container">
+        <header class="article-header">
+            <a href="/" class="article-back-link">← Back to Feed</a>
+            <p class="article-source">
+                Inspired by {{ video.channel }}
+            </p>
+            <img src="{{ video.thumbnail }}" class="article-thumbnail" alt="Article thumbnail">
+        </header>
+        
+        <article class="blog-content">
+            {{ video.article | safe }}
+        </article>
+        
+        <hr class="article-divider">
+        
+        <footer class="article-footer">
+            <p>Want to see the original source?</p>
+            <a href="https://www.youtube.com/watch?v={{ video.video_id }}" 
+            target="_blank" 
+            class="article-cta-button">
+                Watch on YouTube
+            </a>
+        </footer>
+    </div>
+</body>
+</html>

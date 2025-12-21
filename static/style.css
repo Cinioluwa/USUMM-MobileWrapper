@@ -1,0 +1,296 @@
+/* USUMM Feed Card CSS Library with Navbar - Dark Theme */
+
+/* Root variables for easy theming */
+:root {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #242424;
+  --text-primary: #e8e8e8;
+  --text-secondary: #a0a0a0;
+  --accent-color: #888888;
+  --accent-hover: #6a6a6a;
+  --border-color: #2f2f2f;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Global styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+/* Navbar */
+.nav {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.nav h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent-color);
+  margin: 0;
+  letter-spacing: -0.5px;
+  cursor: pointer;
+  
+}
+
+.nav a{
+    text-decoration: none;
+}
+
+.nav form {
+  flex: 1;
+  max-width: 600px;
+  display: flex;
+  gap: 8px;
+}
+
+.nav input[type="text"] {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: all 0.2s;
+  outline: none;
+}
+
+.nav input[type="text"]:focus {
+  border-color: var(--accent-color);
+  background: var(--bg-secondary);
+}
+
+.nav input[type="text"]::placeholder {
+  color: var(--text-secondary);
+}
+
+.nav button[type="submit"] {
+  padding: 10px 24px;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav button[type="submit"]:hover {
+  background: var(--accent-hover);
+}
+
+.nav p {
+  margin: 0;
+  margin-left: auto;
+}
+
+.nav .a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.nav .a:hover {
+  color: var(--text-primary);
+  background: var(--bg-primary);
+}
+
+/* Container for the feed */
+.feed-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Individual feed card */
+.feed-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.feed-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #3a3a3a;
+}
+
+/* Author section */
+.feed-card__author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.feed-card__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+}
+
+.feed-card__author-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Content section */
+.feed-card__content {
+  display: flex;
+  gap: 16px;
+}
+
+.feed-card__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.feed-card__title {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.feed-card__description {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.feed-card__image {
+  width: 246px;
+  height: 138px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Meta section */
+.feed-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.feed-card__timestamp {
+  font-weight: 400;
+}
+
+.feed-card__stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.feed-card__stat span:first-child {
+  font-size: 14px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .nav {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+  
+  .nav h1 {
+    font-size: 20px;
+  }
+  
+  .nav form {
+    /* order: 3; */
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .feed-container {
+    padding: 16px;
+  }
+  
+  .feed-card {
+    padding: 12px;
+  }
+  
+  .feed-card__content {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+  
+  .feed-card__image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+  
+  .feed-card__title {
+    font-size: 16px;
+  }
+  
+  .feed-card__description {
+    font-size: 13px;
+  }
+}
+.nav h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent-color);
+  margin: 0;
+  letter-spacing: -0.5px;
+  cursor: pointer;
+  
+}
+.nav h1 a{
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent-color);
+  margin: 0;
+  letter-spacing: -0.5px;
+  cursor: pointer;
+  
+}
