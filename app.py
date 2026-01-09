@@ -3,6 +3,7 @@ import time
 import random
 import html
 from flask import Flask, redirect, url_for, session, render_template, request, jsonify
+from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_cors import CORS
 from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
@@ -18,6 +19,7 @@ from google.genai.errors import APIError
 load_dotenv()
 app = Flask(__name__)
 CORS(app)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key")
 
 # --- THE CLI STYLE INITIALIZATION ---
