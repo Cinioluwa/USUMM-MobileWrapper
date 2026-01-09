@@ -204,7 +204,8 @@ def search():
             'channelTitle': item['snippet']['channelTitle'],
             'channelId': item['snippet']['channelId'],
             'description': html.unescape(item['snippet']['description']),
-            'published_at': item['snippet']['publishedAt']
+            'published_at': item['snippet']['publishedAt'
+            ]
         })
 
     if video_ids:
@@ -243,19 +244,30 @@ def summarize(video_id):
 
     # --- CLI STYLE PROMPT & CALL ---
     prompt_text = f"""
-        Analyze the video: {video_url}
-        Write a professional blog post. 
+        Watch and deeply analyze the YouTube video: {video_url}
 
-        CRITICAL: Return the response ONLY in raw HTML format. 
-        DO NOT use Markdown (no ## or **). 
+        Your task: Write a detailed, engaging blog post that lets the reader experience the video as if they watched it themselves. Include:
+        - A vivid summary of the video's main points, arguments, and conclusions.
+        - Descriptions of any important visuals, scenes, or on-screen text.
+        - Key quotes or statements from the speaker(s).
+        - A clear breakdown of the structure: introduction, main sections, and conclusion.
+        - 5 key takeaways or lessons.
+        - The overall tone, style, and intent of the creator.
+        - Any notable moments, surprises, or emotional highlights.
+
+        CRITICAL: Return the response ONLY in raw HTML format.
+        DO NOT use Markdown (no ## or **).
         Use ONLY these tags: <h1>, <h2>, <p>, <ul>, <li>.
 
         Structure:
         1. <h1>[Catchy Blog Title]</h1>
-        2. <p>[Introduction mentioning {channel}]</p>
-        3. <h2>[Section Subheading]</h2>
-        4. <p>[Detailed content]</p>
-        ...
+        2. <p>[Immersive introduction mentioning {channel} and the video’s context]</p>
+        3. <h2>Key Takeaways</h2>
+        4. <ul><li>[5 bullet points]</li></ul>
+        5. <h2>Full Experience</h2>
+        6. <p>[Detailed, scene-by-scene summary with all important content]</p>
+        7. <h2>Conclusion</h2>
+        8. <p>[Wrap-up and final thoughts]</p>
         """
 
     # Exponential Backoff variables
