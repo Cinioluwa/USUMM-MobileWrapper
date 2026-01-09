@@ -17,7 +17,7 @@ from google.genai.errors import APIError
 # 1. Configuration & Setup
 load_dotenv()
 app = Flask(__name__)
- CORS(app)
+CORS(app)
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key")
 
 # --- THE CLI STYLE INITIALIZATION ---
