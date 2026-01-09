@@ -46,6 +46,118 @@
         </div>
         <script src="cordova.js"></script>
             <script src="js/index.js"></script>
+                <script>
+                // IndexedDB setup
+                const DB_NAME = 'usummFeedDB';
+                const DB_VERSION = 1;
+                const STORE_NAME = 'feeds';
+                let db;
+
+                function openDB() {
+                    return new Promise((resolve, reject) => {
+                        const request = indexedDB.open(DB_NAME, DB_VERSION);
+                        request.onupgradeneeded = function(e) {
+                            db = e.target.result;
+                            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                                db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                            }
+                        };
+                        request.onsuccess = function(e) {
+                            db = e.target.result;
+                            resolve(db);
+                        };
+                        request.onerror = function(e) {
+                            reject(e);
+                        };
+                    });
+                }
+
+                function saveFeedToDB(feed) {
+                    openDB().then(db => {
+                        const tx = db.transaction(STORE_NAME, 'readwrite');
+                        const store = tx.objectStore(STORE_NAME);
+                        store.put({ id: 'latest', data: feed });
+                    });
+                }
+
+                function getFeedFromDB() {
+                    return openDB().then(db => {
+                        return new Promise((resolve, reject) => {
+                            const tx = db.transaction(STORE_NAME, 'readonly');
+                            const store = tx.objectStore(STORE_NAME);
+                            const req = store.get('latest');
+                            req.onsuccess = function(e) {
+                                resolve(e.target.result ? e.target.result.data : null);
+                            };
+                            req.onerror = function(e) {
+                                reject(e);
+                            };
+                        });
+                    });
+                }
+
+                function updateFeedDisplay(feed) {
+                    const appDiv = document.querySelector('.app');
+                    appDiv.innerHTML = '<h2>Feed</h2>';
+                    if (!feed || feed.length === 0) {
+                        appDiv.innerHTML += '<p>No feed data available.</p>';
+                        return;
+                    }
+                    feed.forEach(video => {
+                        appDiv.innerHTML += `
+                        <div class="feed-card" style="border:1px solid #ccc; margin:10px; padding:10px; border-radius:8px;">
+                            <div style="display:flex; align-items:center;">
+                                <img src="${video.channel_avatar}" alt="avatar" style="width:40px; height:40px; border-radius:50%; margin-right:10px;">
+                                <span style="font-weight:bold;">${video.channelTitle}</span>
+                            </div>
+                            <h3>${video.title}</h3>
+                            <img src="${video.thumbnail}" alt="thumbnail" style="width:100%; max-width:320px; border-radius:8px;">
+                            <p>${video.description ? video.description.substring(0,100) : ''}...</p>
+                            <div style="font-size:0.9em; color:#666;">${video.published_at ? video.published_at.substring(0,10) : ''}</div>
+                            <div style="margin-top:5px;">
+                                <span>👏 ${video.like_count}</span> &nbsp; <span>💬 ${video.comment_count}</span>
+                            </div>
+                        </div>
+                        `;
+                    });
+                }
+
+                function fetchFeedOnline() {
+                    fetch('http://YOUR_FLASK_SERVER_IP:5000/download_feed') // Change to your Flask server address
+                        .then(res => res.json())
+                        .then(feed => {
+                            saveFeedToDB(feed);
+                            updateFeedDisplay(feed);
+                        })
+                        .catch(err => {
+                            console.log('Fetch error:', err);
+                        });
+                }
+
+                function loadFeedOffline() {
+                    getFeedFromDB().then(feed => {
+                        if (feed) {
+                            updateFeedDisplay(feed);
+                        } else {
+                            console.log('No offline feed data available.');
+                        }
+                    });
+                }
+
+                document.addEventListener('deviceready', function() {
+                    function checkConnection() {
+                        var networkState = navigator.connection.type;
+                        if (networkState === 'none' || networkState === 'unknown') {
+                            loadFeedOffline();
+                        } else {
+                            fetchFeedOnline();
+                        }
+                    }
+                    checkConnection();
+                    document.addEventListener('online', fetchFeedOnline, false);
+                    document.addEventListener('offline', loadFeedOffline, false);
+                }, false);
+                </script>
                         <script>
                         if ('serviceWorker' in navigator) {
                             window.addEventListener('load', function() {

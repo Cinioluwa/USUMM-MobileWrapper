@@ -24,7 +24,8 @@
       "ios"
     ],
     "plugins": {
-      "cordova-plugin-inappbrowser": {}
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-network-information": {}
     }
   }
 }

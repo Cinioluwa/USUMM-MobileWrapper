@@ -2,7 +2,7 @@ import os
 import time
 import random
 import html
-from flask import Flask, redirect, url_for, session, render_template, request
+from flask import Flask, redirect, url_for, session, render_template, request, jsonify
 from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
@@ -173,7 +173,11 @@ def search():
     if not query:
         return redirect(url_for('index'))
 
+
     youtube = get_authorized_service()
+    if not youtube:
+        return redirect(url_for('login'))
+
     search_res = youtube.search().list(
         q=query,
         part="snippet",
@@ -224,11 +228,11 @@ def search():
 @app.route('/summarize/<video_id>')
 def summarize(video_id):
     youtube = get_authorized_service()
+    if not youtube:
+        return redirect(url_for('login'))
     video_res = youtube.videos().list(part="snippet", id=video_id).execute()
-    
-    if not video_res['items']:
+    if not video_res or not video_res.get('items'):
         return "Video not found", 404
-        
     snippet = video_res['items'][0]['snippet']
     channel = snippet['channelTitle']
     video_url = f"https://www.youtube.com/watch?v={video_id}"
@@ -265,8 +269,11 @@ def summarize(video_id):
                     types.Part.from_text(text=prompt_text)
                 ],
             )
-            article_html = response.text.replace('```html', '').replace('```', '').strip()
-            break 
+            if response.text is not None:
+                article_html = response.text.replace('```html', '').replace('```', '').strip()
+            else:
+                article_html = "<h2>AI Error</h2><p>No response from AI model.</p>"
+            break
         except APIError as e:
             if attempt < max_retries - 1:
                 time.sleep(wait_time)
@@ -289,10 +296,14 @@ def summarize(video_id):
 
 @app.route('/login')
 def login():
+    if not hasattr(oauth, 'google') or oauth.google is None:
+        return "Google OAuth is not configured properly.", 500
     return oauth.google.authorize_redirect(url_for('authorize', _external=True))
 
 @app.route('/callback')
 def authorize():
+    if not hasattr(oauth, 'google') or oauth.google is None:
+        return "Google OAuth is not configured properly.", 500
     session['google_token'] = oauth.google.authorize_access_token()
     return redirect(url_for('index'))
 
