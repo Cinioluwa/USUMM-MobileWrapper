@@ -38,7 +38,9 @@ oauth.register(
     client_secret=os.getenv("YOUTUBE_CLIENT_SECRET"),
     server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
     client_kwargs={
-        'scope': 'openid email profile https://www.googleapis.com/auth/youtube.readonly'
+        'scope': 'openid email profile https://www.googleapis.com/auth/youtube.readonly',
+        'access_type': 'offline',
+        'prompt': 'consent'
     }
 )
 
@@ -314,7 +316,11 @@ def summarize(video_id):
 def login():
     if not hasattr(oauth, 'google') or oauth.google is None:
         return "Google OAuth is not configured properly.", 500
-    return oauth.google.authorize_redirect(url_for('authorize', _external=True))
+    return oauth.google.authorize_redirect(
+        url_for('authorize', _external=True),
+        access_type='offline',
+        prompt='consent'
+    )
 
 @app.route('/callback')
 def authorize():
