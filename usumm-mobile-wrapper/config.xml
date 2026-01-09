@@ -8,6 +8,6 @@
         Apache Cordova Team
     </author>
     <content src="index.html" />
-    <allow-intent href="http://*/*" />
+    <!-- Only allow HTTPS intents in production -->
     <allow-intent href="https://*/*" />
 </widget>

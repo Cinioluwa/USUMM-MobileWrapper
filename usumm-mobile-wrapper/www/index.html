@@ -123,7 +123,7 @@
                 }
 
                 function fetchFeedOnline() {
-                    fetch('http://YOUR_FLASK_SERVER_IP:5000/download_feed') // Change to your Flask server address
+                    fetch('https://your-app-name.up.railway.app/download_feed') // Use Railway HTTPS URL in production
                         .then(res => res.json())
                         .then(feed => {
                             saveFeedToDB(feed);
@@ -172,7 +172,7 @@
                         </script>
             <script>
             document.addEventListener('deviceready', function() {
-                var flaskUrl = 'http://YOUR_FLASK_SERVER_IP:5000'; // Change to your Flask server address
+                var flaskUrl = 'https://your-app-name.up.railway.app'; // Use Railway HTTPS URL in production
                 cordova.InAppBrowser.open(flaskUrl, '_self');
             }, false);
             </script>
