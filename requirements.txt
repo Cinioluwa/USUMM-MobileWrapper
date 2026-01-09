@@ -6,3 +6,4 @@ google-auth
 python-dotenv
 google-genai
 gunicorn
+flask-cors
