@@ -1,3 +1,4 @@
+
 import os
 import time
 import random
@@ -43,6 +44,12 @@ oauth.register(
         'prompt': 'consent'
     }
 )
+# --- Helper Functions ---
+
+@app.route('/clear-session')
+def clear_session():
+    session.clear()
+    return "Session wiped! Go back to /login and try again."
 
 # --- Helper Functions ---
 
