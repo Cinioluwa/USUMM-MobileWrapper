@@ -15,6 +15,7 @@
             <button type="submit">Search</button>
         </form>
         <p><a class="a" href="/logout">Logout</a></p>
+            <button id="downloadFeedBtn" style="margin-left:10px;">Download Feed</button>
     </div>
 
         
@@ -37,6 +38,18 @@
             </div>
             <img src="{{video.thumbnail}}" alt="" class="feed-card__image">
             </div>
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/static/service-worker.js')
+            .then(function(registration) {
+                console.log('ServiceWorker registration successful:', registration.scope);
+            }, function(err) {
+                console.log('ServiceWorker registration failed:', err);
+            });
+    });
+}
+</script>
             
             <div class="feed-card__meta">
             <!-- <span class="feed-card__highlight">★</span> -->
@@ -58,8 +71,23 @@
 </body>
 
 <script>
-    function redirect(){
-        document.location.href = "http://"
+    document.getElementById('downloadFeedBtn').onclick = async function() {
+        try {
+            const res = await fetch('/download_feed');
+            if (!res.ok) throw new Error('Failed to fetch feed');
+            const data = await res.json();
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'usumm_feed.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (e) {
+            alert('Error downloading feed: ' + e.message);
+        }
     }
 </script>
 </html>

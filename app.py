@@ -55,6 +55,55 @@ def get_authorized_service():
 
 # --- Routes ---
 
+@app.route('/download_feed')
+def download_feed():
+    token = session.get('google_token')
+    if not token:
+        return jsonify({'error': 'Unauthorized'}), 401
+    youtube = get_authorized_service()
+    if not youtube:
+        return jsonify({'error': 'No YouTube service'}), 401
+    sub_response = youtube.subscriptions().list(
+        part="snippet",
+        mine=True,
+        maxResults=20
+    ).execute()
+    videos = []
+    video_ids = []
+    for sub in sub_response.get('items', []):
+        channel_avatar = sub['snippet']['thumbnails']['default']['url']
+        channel_id = sub['snippet']['resourceId']['channelId']
+        uploads_id = "UU" + channel_id[2:]
+        playlist_res = youtube.playlistItems().list(
+            part="snippet,contentDetails",
+            playlistId=uploads_id,
+            maxResults=1
+        ).execute()
+        for item in playlist_res.get('items', []):
+            vid_id = item['contentDetails']['videoId']
+            videos.append({
+                'video_id': vid_id,
+                'title': html.unescape(item['snippet']['title']),
+                'thumbnail': item['snippet']['thumbnails']['high']['url'],
+                'channelTitle': item['snippet']['channelTitle'],
+                'channel_avatar': channel_avatar,
+                'description': html.unescape(item['snippet']['description']),
+                'published_at': item['snippet']['publishedAt']
+            })
+            video_ids.append(vid_id)
+    # Fetch Stats (Likes/Comments) in Batch
+    if video_ids:
+        stats_response = youtube.videos().list(
+            part="statistics",
+            id=",".join(video_ids)
+        ).execute()
+        stats_map = {s['id']: s['statistics'] for s in stats_response.get('items', [])}
+        for v in videos:
+            v_stats = stats_map.get(v['video_id'], {})
+            v['like_count'] = v_stats.get('likeCount', '0')
+            v['comment_count'] = v_stats.get('commentCount', '0')
+    videos = sorted(videos, key=lambda x: x['published_at'], reverse=True)
+    return jsonify(videos)
 @app.route('/')
 def index():
     token = session.get('google_token')
