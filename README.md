@@ -1,87 +1,125 @@
-# USUMM: YouTube to Blog Article Converter 📺
 
-**USUMM** (YouTube Summarizer) is a productivity tool built to combat digital addiction. Instead of "doom-scrolling" through an endless feed of thumbnails and clickbait, this app transforms your subscription feed into a curated list of professional blog articles. 
+# USUMM-MobileWrapper: YouTube Summarizer for Mobile & Web 📱🖥️
 
-By converting video content into text, you can quickly assess the value of a video before committing 20 minutes to watching it.
+**USUMM-MobileWrapper** is a mobile-first YouTube summarizer app, combining a Flask backend with a Cordova-powered Android/iOS wrapper. It transforms your YouTube feed into immersive blog articles using Google Gemini AI, with robust authentication and mobile features.
 
 ---
 
 ## 🚀 Key Features
 
-- **Subscription Feed Integration:** Securely connects to your YouTube account via OAuth 2.0 to pull your real-time feed.
-- **AI-Powered Analysis:** Leverages **Google Gemini 2.5 Flash-Lite** to analyze video content, creator intent, and tone.
-- **Multimodal Content Generation:** Generates a 5-point key takeaway summary followed by a 300-word professional blog article.
-- **Smart Search:** Explore specific topics outside your subscriptions using the integrated YouTube Search API.
-- **Resilient Architecture:** Features a custom **Exponential Backoff** implementation to handle API rate limits and server hiccups gracefully.
+- **Mobile & Tablet Support:** Cordova wrapper for Android/iOS, optimized for touch and offline use.
+- **Subscription Feed Integration:** Secure OAuth 2.0 login to pull your YouTube feed.
+- **AI-Powered Summaries:** Uses Google Gemini 2.5 Flash-Lite for detailed, engaging blog-style video summaries.
+- **Feed Download:** Download your feed for offline reading.
+- **Offline Mode:** Cordova-ready for mobile offline access (service worker for web, Cordova for mobile).
+- **Session Reset:** Built-in `/clear-session` route for troubleshooting OAuth and refresh token issues.
+- **Smart Search:** Search YouTube directly from the app.
+- **Resilient Architecture:** Exponential backoff for API reliability.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Backend:** Python / Flask
+- **Backend:** Python 3.13 / Flask
+- **Mobile Wrapper:** Cordova (Android/iOS)
 - **AI Model:** Google Gemini API (`google-genai` SDK)
 - **API Integration:** YouTube Data API v3
-- **Authentication:** OAuth 2.0 (via Authlib & Flask-Session)
-- **Frontend:** HTML5 / CSS3
+- **Authentication:** OAuth 2.0 (Authlib)
+- **CORS:** flask-cors
+- **Production Server:** Gunicorn
+- **Deployment:** Railway (or local)
+- **Frontend:** HTML5 / CSS3 (Jinja templates)
 
 ---
 
-## 🏗️ Step-by-Step Setup Guide
-
-Follow these steps to build your own version of this tool.
+## 🏗️ Setup Guide
 
 ### 1. Prerequisites
-- Python 3.9+
-- A [Google Cloud Console](https://console.cloud.google.com/) account.
-- A [Google AI Studio](https://aistudio.google.com/) API Key.
+- Python 3.13+
+- Node.js & Cordova CLI (for mobile build)
+- Android Studio (for Android build)
+- Google Cloud Console & AI Studio API Key
 
 ### 2. Google Cloud Configuration
-1. **Create a Project:** In the Cloud Console, create a new project.
-2. **Enable YouTube Data API v3:** Go to "APIs & Services" > "Library" and enable the YouTube API.
-3. **Configure OAuth Consent Screen:** Set it to "External" and add your email.
-4. **Create Credentials:**
-   - Create an **OAuth 2.0 Client ID** (Web Application).
-   - Add `http://127.0.0.1:5000/callback` to the **Authorized redirect URIs**.
+1. **Create a Project** in Cloud Console.
+2. **Enable YouTube Data API v3**.
+3. **Configure OAuth Consent Screen** (External).
+4. **Create OAuth 2.0 Client ID** (Web Application):
+    - Add `http://127.0.0.1:5000/callback` and your production/callback URLs.
 
-### 3. Installation
-Clone the repository and install the dependencies:
+### 3. Backend Installation
+Clone and install dependencies:
 
 ```bash
-git clone https://github.com/yourusername/usumm.git
-cd usumm
+git clone https://github.com/yourusername/usumm-mobile-wrapper.git
+cd USUMM-MobileWrapper
 pip install -r requirements.txt
 ```
 
 ### 4. Environment Configuration (.env)
-Create a file named `.env` in the root folder and paste the following, replacing the placeholders with your actual keys:
+Create a `.env` file in the root folder:
 
 ```
-SECRET_KEY=yoursecretkeyhere
+SECRET_KEY=your_secret_key
 YOUTUBE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
 YOUTUBE_CLIENT_SECRET=your_google_client_secret
-GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
-### 5. Running the App
-Start the Flask server:
+### 5. Running the Backend
 
 ```bash
 python app.py
+# or for production
+gunicorn app:app
 ```
 
-Open your browser and visit: `http://127.0.0.1:5000`
+Visit: `http://127.0.0.1:5000`
+
+### 6. Cordova Mobile Wrapper Setup
+
+```bash
+cd usumm-mobile-wrapper
+cordova platform add android
+cordova platform add ios
+cordova plugin add cordova-plugin-inappbrowser cordova-plugin-network-information
+cordova build android # or ios
+```
+
+Update `config.xml` for HTTPS intents and permissions as needed.
+
+### 7. Mobile App Configuration
+- Update API URLs in `www/index.html` to point to your backend.
+- Build and deploy to your device/emulator.
 
 ---
 
-## 🧪 Challenges & Learnings
+## 🧪 Troubleshooting & Tips
 
-### Prompt Engineering
-One of the core challenges was fine-tuning the Gemini prompt to avoid "generic AI" introductions. I experimented with persona-based prompting to ensure the articles maintain the specific "voice" of the YouTuber.
+- **OAuth Refresh Token Issues:**
+   - Use `/clear-session` route to fully reset session.
+   - Remove app access from your Google account, then log in again.
+- **Cordova Build Issues:**
+   - Ensure Android SDK path is set in `local.properties`.
+   - Use Android Studio for Gradle setup.
+- **Offline Mode:**
+   - Cordova handles offline for mobile; service worker is used for web only.
+- **Production Deployment:**
+   - Use Gunicorn and Railway for scalable deployment.
 
-### API Resilience
-To ensure the app didn't crash during peak API usage, I implemented an exponential backoff algorithm. This logic catches transient errors and retries the request after an increasing delay:
+---
 
-$wait\_time = (2^n) + random\_jitter$
+## ✨ Improvements & Learnings
 
-### Data Security
-Implementing OAuth 2.0 required a deep dive into session management and token handling to ensure that user data remains private and secure while browsing their feed.
+- **Immersive AI Prompt:**
+   - Custom prompt for Gemini ensures summaries match the creator’s style and provide a vivid, blog-like experience.
+- **Session Management:**
+   - Added `/clear-session` for robust OAuth troubleshooting.
+- **Mobile Experience:**
+   - Cordova wrapper enables true mobile/tablet usability, with offline and download support.
+
+---
+
+## 📄 License
+
+MIT License
